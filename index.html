@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>window.$ = window.jQuery = require('jquery');</script>
+    <script src="./file-process.js"></script>
+    <script src="./node_modules/chosen-js/chosen.jquery.min.js"></script>
+    <link rel="stylesheet" href="./node_modules/chosen-js/chosen.min.css">
+    <title>RB3DX Admin Panel</title>
+</head>
+<body>
+    <h1>RB3DX Admin Panel</h1>
+    <div id="select-ace">
+        <p>Select ace_admin.dta</p>
+        <input type="file" id="upload-ace"></button>
+    </div>    
+    <div id="ace_uploaded" style="display: none;">
+        <div>
+            <p>
+                <p id="uploadCSV">Upload CSV</p>
+                <input type="file" id="upload"></button>
+            </p>
+
+            <label for="song_list">Choose a song:</label>
+            <select name="song_list" id="song_list"></select>
+        </div>
+        <br>
+        <div>
+            <button onclick="logSong()">Play Song</button>
+            <button onclick="writeToFile('{ui goto_screen song_select_enter_screen}')">Song Library</button>
+        </div>
+        <br>
+        <div>
+            <button onclick="writeToFile('{overshell attempt_to_add_user {user_mgr get_user_from_pad_num 0}}')">Drop in player 1</button>
+            <button onclick="writeToFile('{overshell attempt_to_add_user {user_mgr get_user_from_pad_num 1}}')">Drop in player 2</button>
+            <button onclick="writeToFile('{overshell attempt_to_add_user {user_mgr get_user_from_pad_num 2}}')">Drop in player 3</button>
+            <button onclick="writeToFile('{overshell attempt_to_add_user {user_mgr get_user_from_pad_num 3}}')">Drop in player 4</button>
+        </div>
+        <br>
+        <div>
+            <button onclick="writeToFile('{if {user_mgr get_user_from_slot 0} {{overshell get_slot {user_mgr get_user_from_slot 0}} remove_user}}')">Drop out player 1</button>
+            <button onclick="writeToFile('{if {user_mgr get_user_from_slot 1} {{overshell get_slot {user_mgr get_user_from_slot 1}} remove_user}}')">Drop out player 2</button>
+            <button onclick="writeToFile('{if {user_mgr get_user_from_slot 2} {{overshell get_slot {user_mgr get_user_from_slot 2}} remove_user}}')">Drop out player 3</button>
+            <button onclick="writeToFile('{if {user_mgr get_user_from_slot 3} {{overshell get_slot {user_mgr get_user_from_slot 3}} remove_user}}')">Drop out player 4</button>
+        </div>
+        <br>
+        <div>
+            <button onclick="writeToMic()">Set Mic Volumes</button>
+            <select name="mic1" id="mic1">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>            
+              </select>
+              <select name="mic2" id="mic2">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>            
+                </select>
+                <select name="mic3" id="mic3">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>            
+                  </select>
+        </div>
+
+
+        <p id="status"></p>
+    </div>
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        document.getElementById("upload-ace").addEventListener("change", uploadACE, false);
+
+        function uploadACE() {
+            ipcRenderer.send('setAcePath', document.getElementById("upload-ace").files[0].path);
+            document.getElementById("select-ace").remove()
+            $("#ace_uploaded").css("display", "block");
+        }
+
+        function writeToFile(message) {
+            ipcRenderer.send('write-to-file', message);
+        }
+
+        function writeToMic() {
+            const mic1 = document.getElementById('mic1').value
+            const mic2 = document.getElementById('mic2').value
+            const mic3 = document.getElementById('mic3').value
+            writeToFile(
+                `{profile_mgr set_mic_vol 0 ${mic1}} {profile_mgr update_mic_levels 0}\n   {profile_mgr set_mic_vol 1 ${mic2}} {profile_mgr update_mic_levels 1}\n   {profile_mgr set_mic_vol 2 ${mic3}} {profile_mgr update_mic_levels 2}`
+            )
+        }
+
+        ipcRenderer.on('write-status', (event, response) => {
+            document.getElementById('status').innerText = response;
+        });
+        
+
+        document.getElementById("upload").addEventListener("change", upload, false);
+
+        function upload(e) {
+            console.log("file uploaded");
+            var file = document.getElementById("upload").files[0];
+            console.log(file);
+            parseCSV(file.path);
+        }
+
+        function logSong() {
+            var shortname = (document.getElementById("song_list").value);
+            writeToFile(
+                `{meta_performer reset_songs} {meta_performer set_song {symbol ${shortname}}} {gamemode set_mode qp_coop} {ui abstract_wipe} {ui goto_screen {music_library get_next_screen}}`
+            )
+        }
+    </script>
+</body>
+</html>
