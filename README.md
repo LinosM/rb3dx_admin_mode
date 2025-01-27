@@ -2,13 +2,13 @@
 
 Electron App that controls and send commands externally Rock Band 3 Deluxe on the RPCS3 emulator
 
+![image](https://i.imgur.com/V19D9MN.png)
+
 # Requirements
 
 * [RPCS3 Emulator](https://github.com/RPCS3/rpcs3)
 * [Rock Band 3 Deluxe - event_admin branch](https://github.com/LinosM/rock-band-3-deluxe/tree/event_admin)
 * [Nautilus](https://github.com/trojannemo/Nautilus)
-
-![image](https://i.imgur.com/V19D9MN.png)
 
 # Usage
 
