@@ -1,6 +1,6 @@
 # Description
 
-Electron App that control and send commands externally Rock Band 3 Deluxe on the RPCS3 emulator
+Electron App that controls and send commands externally Rock Band 3 Deluxe on the RPCS3 emulator
 
 # Requirements
 
