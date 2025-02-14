@@ -26,7 +26,7 @@ fs.createReadStream(file)
         el.value = option["Short Name"];
         optionList.appendChild(el);
     });
-
+    $("#song-count").text(`${results.length} songs`);
     $("#uploadCSV").remove();
     $("#song_list").chosen();
 });

@@ -11,15 +11,23 @@
 </head>
 <body>
     <h1>RB3DX Admin Panel</h1>
-    <div id="select-ace">
+    <div id="set-platform">
+        <h2>Select Platform</h2>
+        <button onclick="setPlatform('xbox')">Xbox 360</button>
+        <button onclick="setPlatform('rpcs3')">RPCS3</button>
+    </div>
+
+    <div id="select-ace" style="display: none;">
         <p>Select ace_admin.dta</p>
         <input type="file" id="upload-ace"></button>
-    </div>    
+    </div>
+
     <div id="ace_uploaded" style="display: none;">
         <div>
             <p>
                 <p id="uploadCSV">Upload CSV</p>
-                <input type="file" id="upload"></button>
+                <input type="file" style="display: inline-block;" id="upload"></input>
+                <p style="display: inline-block;" id="song-count"></p>
             </p>
 
             <label for="song_list">Choose a song:</label>
@@ -27,22 +35,23 @@
         </div>
         <br>
         <div>
+            <button id="jumpSongBtn" onclick="jumpSong()" style="display: none;">Jump to Song</button>
             <button onclick="logSong()">Play Song</button>
-            <button onclick="writeToFile('{ui goto_screen song_select_enter_screen}')">Song Library</button>
+            <button onclick="sendCommand('{ui goto_screen song_select_enter_screen}')">Song Library</button>
         </div>
         <br>
         <div>
-            <button onclick="writeToFile('{overshell attempt_to_add_user {user_mgr get_user_from_pad_num 0}}')">Drop in player 1</button>
-            <button onclick="writeToFile('{overshell attempt_to_add_user {user_mgr get_user_from_pad_num 1}}')">Drop in player 2</button>
-            <button onclick="writeToFile('{overshell attempt_to_add_user {user_mgr get_user_from_pad_num 2}}')">Drop in player 3</button>
-            <button onclick="writeToFile('{overshell attempt_to_add_user {user_mgr get_user_from_pad_num 3}}')">Drop in player 4</button>
+            <button onclick="sendCommand('{overshell attempt_to_add_user {user_mgr get_user_from_pad_num 0}}')">Drop in player 1</button>
+            <button onclick="sendCommand('{overshell attempt_to_add_user {user_mgr get_user_from_pad_num 1}}')">Drop in player 2</button>
+            <button onclick="sendCommand('{overshell attempt_to_add_user {user_mgr get_user_from_pad_num 2}}')">Drop in player 3</button>
+            <button onclick="sendCommand('{overshell attempt_to_add_user {user_mgr get_user_from_pad_num 3}}')">Drop in player 4</button>
         </div>
         <br>
         <div>
-            <button onclick="writeToFile('{if {user_mgr get_user_from_slot 0} {{overshell get_slot {user_mgr get_user_from_slot 0}} remove_user}}')">Drop out player 1</button>
-            <button onclick="writeToFile('{if {user_mgr get_user_from_slot 1} {{overshell get_slot {user_mgr get_user_from_slot 1}} remove_user}}')">Drop out player 2</button>
-            <button onclick="writeToFile('{if {user_mgr get_user_from_slot 2} {{overshell get_slot {user_mgr get_user_from_slot 2}} remove_user}}')">Drop out player 3</button>
-            <button onclick="writeToFile('{if {user_mgr get_user_from_slot 3} {{overshell get_slot {user_mgr get_user_from_slot 3}} remove_user}}')">Drop out player 4</button>
+            <button onclick="sendCommand('{if {user_mgr get_user_from_slot 0} {{overshell get_slot {user_mgr get_user_from_slot 0}} remove_user}}')">Drop out slot 1</button>
+            <button onclick="sendCommand('{if {user_mgr get_user_from_slot 1} {{overshell get_slot {user_mgr get_user_from_slot 1}} remove_user}}')">Drop out slot 2</button>
+            <button onclick="sendCommand('{if {user_mgr get_user_from_slot 2} {{overshell get_slot {user_mgr get_user_from_slot 2}} remove_user}}')">Drop out slot 3</button>
+            <button onclick="sendCommand('{if {user_mgr get_user_from_slot 3} {{overshell get_slot {user_mgr get_user_from_slot 3}} remove_user}}')">Drop out slot 4</button>
         </div>
         <br>
         <div>
@@ -90,14 +99,34 @@
                     <option value="11">11</option>            
                   </select>
         </div>
-
+        <br>
+        <div>
+            <button onclick="showManualScript()" style="margin-bottom: 10px;">(ADVANCED) Manual Script</button>
+            <textarea id="manualScript" style="overflow:hidden; resize:none; display: none; width: 100%; max-width: 600px;"></textarea>
+        </div>
 
         <p id="status"></p>
     </div>
+    <div id="set-xbox-ip" style="display: none;">
+        <p style="display: inline-block;">Xbox 360 IP:</p>
+        <input type="text" id="xbox-ip"></input>
+    </div>
     <script>
         const { ipcRenderer } = require('electron');
+        var consoleMode = "";
+        var xboxIP = "";
 
-        document.getElementById("upload-ace").addEventListener("change", uploadACE, false);
+        function setPlatform(console) {
+            consoleMode = console;
+            $("#set-platform").remove();
+            if (consoleMode == "xbox") {
+                $("#jumpSongBtn").css("display", "inline-block");
+                $("#set-xbox-ip").css("display", "block");
+            }
+            if (consoleMode == "rpcs3") {
+                $("#select-ace").css("display", "block");
+            }
+        }
 
         function uploadACE() {
             ipcRenderer.send('setAcePath', document.getElementById("upload-ace").files[0].path);
@@ -105,17 +134,68 @@
             $("#ace_uploaded").css("display", "block");
         }
 
-        function writeToFile(message) {
-            ipcRenderer.send('write-to-file', message);
+        $(document).ready(function() {
+            $('#manualScript').keydown(function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {  // Check if Enter is pressed (without Shift)
+                    e.preventDefault(); // Prevent new line if needed
+                    runManualScript(); // Call your function
+                }
+            });
+        });
+
+        $(document).ready(function() {
+            $('#xbox-ip').keydown(function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {  // Check if Enter is pressed (without Shift)
+                    e.preventDefault(); // Prevent new line if needed
+                    xboxIP = document.getElementById("xbox-ip").value;
+                    alert("Xbox IP Set");
+                    $("#ace_uploaded").css("display", "block");
+                }
+            });
+        });
+
+        $(document).ready(function() {
+            $('#manualScript').on('input', function() {
+                this.style.height = 'auto'; // Reset height to recalculate
+                this.style.height = this.scrollHeight + 'px'; // Set new height
+            });
+        });
+
+        function showManualScript() {
+            $("#manualScript").css("display", $("#manualScript").css("display") == "block" ? "none" : "block"  ); // hide or show text box depending on current status
+        }
+
+        function runManualScript() {
+            let inputValue = document.getElementById("manualScript").value;
+            sendCommand(inputValue);
+        }
+
+        document.getElementById("upload-ace").addEventListener("change", uploadACE, false);
+
+        function replaceSpaces(str) {
+            return str.replace(/ /g, '^');
+        }
+
+        function sendCommand(message) {
+            switch (consoleMode) {
+                case "rpcs3":
+                    ipcRenderer.send('write-to-file', message);
+                    break;
+                case "xbox":
+                    fetch(`http://${xboxIP}:21070/execute?script={do ${message}}`);
+                default:
+                    break;
+            }
         }
 
         function writeToMic() {
             const mic1 = document.getElementById('mic1').value
             const mic2 = document.getElementById('mic2').value
             const mic3 = document.getElementById('mic3').value
-            writeToFile(
-                `{profile_mgr set_mic_vol 0 ${mic1}} {profile_mgr update_mic_levels 0}\n   {profile_mgr set_mic_vol 1 ${mic2}} {profile_mgr update_mic_levels 1}\n   {profile_mgr set_mic_vol 2 ${mic3}} {profile_mgr update_mic_levels 2}`
-            )
+                sendCommand(
+                    `{profile_mgr set_mic_vol 0 ${mic1}} {profile_mgr update_mic_levels 0} {profile_mgr set_mic_vol 1 ${mic2}} {profile_mgr update_mic_levels 1} {profile_mgr set_mic_vol 2 ${mic3}} {profile_mgr update_mic_levels 2}`
+                )
+
         }
 
         ipcRenderer.on('write-status', (event, response) => {
@@ -134,9 +214,13 @@
 
         function logSong() {
             var shortname = (document.getElementById("song_list").value);
-            writeToFile(
+            sendCommand(
                 `{meta_performer reset_songs} {meta_performer set_song {symbol ${shortname}}} {gamemode set_mode qp_coop} {ui abstract_wipe} {ui goto_screen {music_library get_next_screen}}`
             )
+        }
+        function jumpSong() {
+            var shortname = (document.getElementById("song_list").value);
+            fetch(`http://${xboxIP}:21070/jump?shortname=${shortname}`);
         }
     </script>
 </body>
