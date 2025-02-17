@@ -27,6 +27,7 @@ Electron App that controls and send commands externally to Rock Band 3
 EnableHTTPServer = true
 AllowScripts = true
 ```
+As a saftey measure, please set ```AllowScripts``` back to false when not using
 * Set your Xbox 360 IP adress in the app
 * Use Setlist Manager from Nautilus to export your song library to CSV, exporting with everything selected
 * Import your song library by selecting the CSV file you created
