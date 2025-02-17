@@ -28,7 +28,7 @@ EnableHTTPServer = true
 AllowScripts = true
 ```
 As a saftey measure, please set ```AllowScripts``` back to false when not using
-* Set your Xbox 360 IP adress in the app
+* Set your Xbox 360 IP address in the app
 * Use Setlist Manager from Nautilus to export your song library to CSV, exporting with everything selected
 * Import your song library by selecting the CSV file you created
 
@@ -41,6 +41,7 @@ As a saftey measure, please set ```AllowScripts``` back to false when not using
    (dx_admin_mode 1)
 )
 ```
+Set back to 0 when not using so RB3DX isn't constantly polling this file
 * Boot the game to generate an ace_admin.dta file and point to that file in the app
 * Use Setlist Manager from Nautilus to export your song library to CSV, exporting with everything selected
 * Import your song library by selecting the CSV file you created
