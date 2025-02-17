@@ -1,18 +1,48 @@
 # Description
 
-Electron App that controls and send commands externally Rock Band 3 Deluxe on the RPCS3 emulator
+Electron App that controls and send commands externally to Rock Band 3
 
 ![image](https://i.imgur.com/V19D9MN.png)
 
 # Requirements
 
-* [RPCS3 Emulator](https://github.com/RPCS3/rpcs3)
-* [Rock Band 3 Deluxe - event_admin branch](https://github.com/LinosM/rock-band-3-deluxe/tree/event_admin)
 * [Nautilus](https://github.com/trojannemo/Nautilus)
 
-# Usage
+### <ins>Xbox 360</ins>
+* [RB3Enhanced - Nightly Feb 16 2025 or newer](https://nightly.link/RBEnhanced/RB3Enhanced/workflows/build/master)
+  
+  Source: https://github.com/RBEnhanced/RB3Enhanced
 
+### <ins>RPCS3</ins>
+* [Rock Band 3 Deluxe - Nightly Feb 17 2025 or newer](https://nightly.link/hmxmilohax/rock-band-3-deluxe/workflows/build/develop)
+
+  Source: https://github.com/hmxmilohax/rock-band-3-deluxe
+
+
+# Usage (Xbox 360)
+
+* In your rb3.ini, make sure the following is enabled
+```ini
+[HTTP]
+EnableHTTPServer = true
+AllowScripts = true
+```
+* Set your Xbox 360 IP adress in the app
 * Use Setlist Manager from Nautilus to export your song library to CSV, exporting with everything selected
-* Boot RB3DX once to generate the ace_admin.dta file
-* Within the app, navigate to dev_hdd0\game\BLUS30463\USRDIR and select the ace_admin.dta file
 * Import your song library by selecting the CSV file you created
+
+# Usage (RPCS3)
+
+* Navigate to ```dev_hdd0/game/BLUS30463/USRDIR```
+* Before booting the game, in dx_settings.dta make sure the following is set to 1
+```lisp
+(dx_admin_mode
+   (dx_admin_mode 1)
+)
+```
+* Boot the game to generate an ace_admin.dta file and point to that file in the app
+* Use Setlist Manager from Nautilus to export your song library to CSV, exporting with everything selected
+* Import your song library by selecting the CSV file you created
+
+### <ins>ADVANCED USERS ONLY</ins>
+* Pressing Ctrl + Shift + U will show a textbox, allowing you to enter any command to send to the game
