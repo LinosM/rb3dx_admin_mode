@@ -6,6 +6,8 @@ var acePath = "";
 
 let mainWindow;
 
+app.disableHardwareAcceleration();
+
 app.whenReady().then(() => {
     mainWindow = new BrowserWindow({
         width: 800,

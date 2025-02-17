@@ -100,7 +100,7 @@
                   </select>
         </div>
         <br>
-        <div>
+        <div id="toggleManualScript" style="display: none;">
             <button onclick="showManualScript()" style="margin-bottom: 10px;">(ADVANCED) Manual Script</button>
             <textarea id="manualScript" style="overflow:hidden; resize:none; display: none; width: 100%; max-width: 600px;"></textarea>
         </div>
@@ -127,6 +127,14 @@
                 $("#select-ace").css("display", "block");
             }
         }
+
+        // Only show manual script menu when pressing ctrl + shift + u
+        $(document).keydown(function (e) {
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'u') {
+                e.preventDefault(); // Prevent default action if needed
+                $("#toggleManualScript").css("display", "block");
+            }
+        });
 
         function uploadACE() {
             ipcRenderer.send('setAcePath', document.getElementById("upload-ace").files[0].path);
@@ -192,9 +200,30 @@
             const mic1 = document.getElementById('mic1').value
             const mic2 = document.getElementById('mic2').value
             const mic3 = document.getElementById('mic3').value
-                sendCommand(
-                    `{profile_mgr set_mic_vol 0 ${mic1}} {profile_mgr update_mic_levels 0} {profile_mgr set_mic_vol 1 ${mic2}} {profile_mgr update_mic_levels 1} {profile_mgr set_mic_vol 2 ${mic3}} {profile_mgr update_mic_levels 2}`
-                )
+            switch (consoleMode) {
+                case "rpcs3":
+                    sendCommand(
+                        `{profile_mgr set_mic_vol 0 ${mic1}} {profile_mgr update_mic_levels 0} {profile_mgr set_mic_vol 1 ${mic2}} {profile_mgr update_mic_levels 1} {profile_mgr set_mic_vol 2 ${mic3}} {profile_mgr update_mic_levels 2}`
+                    )
+                    break;
+                case "xbox":
+                    sendCommand(
+                        `{profile_mgr set_mic_vol 0 ${mic1}} {profile_mgr update_mic_levels 0}`
+                    )
+                    setTimeout(() => {
+                        sendCommand(
+                           `{profile_mgr set_mic_vol 1 ${mic2}} {profile_mgr update_mic_levels 1}`
+                        )
+                    }, 250);
+                    setTimeout(() => {
+                        sendCommand(
+                           `{profile_mgr set_mic_vol 2 ${mic3}} {profile_mgr update_mic_levels 2}`
+                        )
+                    }, 500);
+                    break;
+                default:
+                    break;
+            }
 
         }
 
