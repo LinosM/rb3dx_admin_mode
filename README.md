@@ -2,6 +2,13 @@
 
 Electron App that controls and send commands externally to Rock Band 3
 
+### <ins>Current Features</ins>
+
+* Select and play a certain song
+* Jump to song library
+* Drop in/out players
+* Control mic volumes
+
 ![image](https://i.imgur.com/V19D9MN.png)
 
 # Requirements
