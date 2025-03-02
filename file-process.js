@@ -21,8 +21,7 @@ fs.createReadStream(file)
     let optionList = document.getElementById('song_list');
     results.forEach(option => {
         let el = document.createElement("option")
-        console.log(option["Song Title"]);
-        el.textContent = option["Song Title"];
+        el.textContent = `${option["﻿\"Artist\""]} - ${option["Song Title"]}`;
         el.value = option["Short Name"];
         optionList.appendChild(el);
     });
