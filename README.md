@@ -36,8 +36,12 @@ AllowScripts = true
 ```
 As a saftey measure, please set ```AllowScripts``` back to false when not using
 * Set your Xbox 360 IP address in the app
-* Use Setlist Manager from Nautilus to export your song library to CSV, exporting with everything selected
-* Import your song library by selecting the CSV file you created
+* Import your song library in one of two ways
+  * <ins>Option 1</ins>
+    * While Rock Band 3 is in the song library, click the ```Pull Songs``` button
+  * <ins>Option 2</ins>
+    * Use Setlist Manager from Nautilus to export your song library to CSV, exporting with everything selected
+    * Import your song library by selecting the CSV file you created
 
 # Usage (RPCS3)
 

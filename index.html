@@ -23,13 +23,13 @@
     </div>
 
     <div id="ace_uploaded" style="display: none;">
+        <div style="margin-bottom: 10px;">
+            <h3 id="song-count" style="margin: 0px; margin-bottom: 10px;"></h3>
+            <button style="display: inline-block;" id="pullSongs" onclick="FetchSongList()">Pull Songs</button>
+            <p style="display: inline-block;" id="uploadCSV"></p>
+            <input type="file" style="display: inline-block;" id="upload"></input>
+        </div>
         <div>
-            <p>
-                <p id="uploadCSV">Upload CSV</p>
-                <input type="file" style="display: inline-block;" id="upload"></input>
-                <p style="display: inline-block;" id="song-count"></p>
-            </p>
-
             <label for="song_list">Choose a song:</label>
             <select style="max-width: 500px;" name="song_list" id="song_list"></select>
         </div>
@@ -122,9 +122,12 @@
             if (consoleMode == "xbox") {
                 $("#jumpSongBtn").css("display", "inline-block");
                 $("#set-xbox-ip").css("display", "block");
+                $("#uploadCSV").text("or Upload CSV");
             }
             if (consoleMode == "rpcs3") {
                 $("#select-ace").css("display", "block");
+                $("#uploadCSV").text("Upload CSV");
+                $("#pullSongs").css("display", "none");
             }
         }
 
@@ -168,6 +171,10 @@
                 this.style.height = this.scrollHeight + 'px'; // Set new height
             });
         });
+
+        function FetchSongList() {
+            fetch(`http://${xboxIP}:21070/list_songs`).then((data) => data.text().then((t) => ParseSongList(t)));
+        }
 
         function showManualScript() {
             $("#manualScript").css("display", $("#manualScript").css("display") == "block" ? "none" : "block"  ); // hide or show text box depending on current status
