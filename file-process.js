@@ -29,7 +29,7 @@ function ParseSongList(listini) {
     let optionList = document.getElementById('song_list');
     song_list.forEach((song) => {
         let el = document.createElement("option")
-        el.textContent = `${song.artist} - ${song.title}`;
+        el.textContent = `${song.artist} - ${song.title} [${song.origin}]`;
         el.value = song.shortname;
         optionList.appendChild(el);
     });
@@ -57,7 +57,7 @@ function parseCSV(file) {
         let optionList = document.getElementById('song_list');
         results.forEach(option => {
             let el = document.createElement("option")
-            el.textContent = `${option["﻿\"Artist\""]} - ${option["Song Title"]}`;
+            el.textContent = `${option["﻿\"Artist\""]} - ${option["Song Title"]} [${option["Source"]}]`;
             el.value = option["Short Name"];
             optionList.appendChild(el);
         });
