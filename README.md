@@ -13,6 +13,7 @@ Electron App that controls and send commands externally to Rock Band 3
 
 # Requirements
 
+* [RB3DX Admin Panel](https://github.com/LinosM/rb3dx_admin_mode/releases)
 * [Nautilus](https://github.com/trojannemo/Nautilus)
 
 ### <ins>Xbox 360</ins>
