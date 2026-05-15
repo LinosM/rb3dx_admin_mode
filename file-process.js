@@ -57,7 +57,7 @@ function parseCSV(file) {
         let optionList = document.getElementById('song_list');
         results.forEach(option => {
             let el = document.createElement("option")
-            el.textContent = `${option["﻿\"Artist\""]} - ${option["Song Title"]} [${option["Source"]}]`;
+            el.textContent = `${option["Artist"]} - ${option["Song Title"]} [${option["Source"]}]`;
             el.value = option["Short Name"];
             optionList.appendChild(el);
         });
